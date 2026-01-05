@@ -17,12 +17,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
     Args:
         plain_password: 明文密碼
-        hashed_password: Bcrypt 雜湊後的密碼
+        hashed_password: Bcrypt 雜湊後的密碼（從資料庫讀取的 string）
 
     Returns:
         bool: 密碼是否正確
     """
-    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    # Bcrypt hash 是 ASCII-compatible binary data，必須用 latin-1 編碼
+    # 絕對不能用 utf-8，否則會破壞 hash 的二進制結構
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("latin-1"))
 
 
 def get_password_hash(password: str) -> str:
