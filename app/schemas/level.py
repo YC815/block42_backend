@@ -1,65 +1,119 @@
-"""Pydantic schemas for Level data"""
+"""Level Pydantic Schemas - 重構版"""
 from pydantic import BaseModel, Field
-from typing import List, Literal, Optional
+from typing import Literal
+from datetime import datetime
 
 
-# --- 基礎元件定義 ---
+# --- 遊戲資料結構 (保持原樣) ---
 class Coordinate(BaseModel):
+    """座標"""
     x: int
     y: int
 
 
 class Tile(Coordinate):
-    # 使用 Literal 做列舉檢查，只允許 R, G, B
+    """地板（帶顏色）"""
     color: Literal['R', 'G', 'B']
 
 
 class StartPoint(Coordinate):
-    # 0:上, 1:右, 2:下, 3:左
-    dir: Literal[0, 1, 2, 3]
+    """起點（帶方向）"""
+    dir: Literal[0, 1, 2, 3]  # 0:上, 1:右, 2:下, 3:左
 
 
-# --- 設定區塊 ---
 class ToolConfig(BaseModel):
+    """工具開關設定"""
     paint_red: bool = True
     paint_green: bool = False
     paint_blue: bool = False
 
 
 class LevelConfig(BaseModel):
+    """關卡配置"""
     f0: int = 10
     f1: int = 0
     f2: int = 0
     tools: ToolConfig
 
 
-# --- 地圖結構 ---
 class MapData(BaseModel):
+    """地圖資料"""
     start: StartPoint
-    stars: List[Coordinate]
-    tiles: List[Tile]
+    stars: list[Coordinate]
+    tiles: list[Tile]
 
 
-# --- 完整關卡資料 (Request/Response Body) ---
-class LevelSchema(BaseModel):
-    id: str
-    title: str
+# --- Solution Schema ---
+class Solution(BaseModel):
+    """解題資料（提交時驗證格式）"""
+    commands_f0: list[str]
+    commands_f1: list[str] = []
+    commands_f2: list[str] = []
+    steps_count: int = Field(..., ge=0, description="步數（用於難度評估）")
+
+
+# --- Request Schemas ---
+class LevelCreate(BaseModel):
+    """建立關卡（不提供 id，後端生成）"""
+    title: str = Field(..., min_length=1, max_length=200)
     config: LevelConfig
     map: MapData
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "id": "lvl_101",
-                "title": "新手教學",
-                "config": {
-                    "f0": 5, "f1": 0, "f2": 0,
-                    "tools": {"paint_red": True, "paint_green": False, "paint_blue": False}
-                },
-                "map": {
-                    "start": {"x": 0, "y": 0, "dir": 1},
-                    "stars": [{"x": 2, "y": 0}],
-                    "tiles": [{"x": 0, "y": 0, "color": "R"}, {"x": 1, "y": 0, "color": "R"}]
-                }
-            }
-        }
+
+class LevelUpdate(BaseModel):
+    """更新關卡（強制回到 draft 狀態）"""
+    title: str = Field(..., min_length=1, max_length=200)
+    config: LevelConfig
+    map: MapData
+
+
+class LevelPublish(BaseModel):
+    """發布關卡（提交 solution）"""
+    solution: Solution
+    as_official: bool = False  # 管理員專用
+    official_order: int | None = None  # 管理員專用
+
+
+class LevelApprove(BaseModel):
+    """審核通過"""
+    as_official: bool = False
+    official_order: int | None = None
+
+
+class LevelReject(BaseModel):
+    """駁回理由"""
+    reason: str = Field(..., min_length=1)
+
+
+# --- Response Schemas ---
+class LevelOut(BaseModel):
+    """公開回傳（含遊戲資料）"""
+    id: str
+    title: str
+    author_id: int
+    status: str
+    is_official: bool
+    official_order: int
+    config: LevelConfig
+    map: MapData
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class LevelDetail(LevelOut):
+    """詳細資訊（Designer/Admin 可見 solution）"""
+    solution: Solution | None = None
+
+
+class LevelListItem(BaseModel):
+    """列表項目（簡化資訊）"""
+    id: str
+    title: str
+    author_id: int
+    status: str
+    is_official: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

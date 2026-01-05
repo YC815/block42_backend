@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     database_url: str
     debug: bool = False
     log_level: str = "info"
+    secret_key: str = "INSECURE_DEFAULT_SECRET_CHANGE_ME"  # JWT 簽名金鑰
 
 
 settings = Settings()

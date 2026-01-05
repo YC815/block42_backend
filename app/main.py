@@ -5,6 +5,9 @@ from contextlib import asynccontextmanager
 from app.database import engine
 from app.config import settings
 
+# 導入路由
+from app.api.v1 import auth, levels, designer, admin
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,6 +32,13 @@ app = FastAPI(
     debug=settings.debug,
     lifespan=lifespan
 )
+
+
+# 註冊路由
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(levels.router, prefix="/api/v1")
+app.include_router(designer.router, prefix="/api/v1")
+app.include_router(admin.router, prefix="/api/v1")
 
 
 @app.get("/")
