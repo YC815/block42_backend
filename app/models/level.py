@@ -70,6 +70,11 @@ class Level(Base):
     # Draft/Pending 狀態時為 NULL
     solution: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 
+    # ===== 元資料 (nullable) =====
+    # metadata 結構: {rejection_reason: str, rejected_at: str, ...}
+    # 儲存駁回理由、其他元資料
+    metadata_: Mapped[dict | None] = mapped_column("metadata", JSONB, nullable=True)
+
     # ===== 時間戳 =====
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

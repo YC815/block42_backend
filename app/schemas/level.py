@@ -1,5 +1,5 @@
 """Level Pydantic Schemas - 重構版"""
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Literal
 from datetime import datetime
 
@@ -9,6 +9,14 @@ class Coordinate(BaseModel):
     """座標"""
     x: int
     y: int
+
+    @field_validator('x', 'y')
+    @classmethod
+    def validate_coordinates(cls, v: int) -> int:
+        """驗證座標在 0-100 範圍內"""
+        if not (0 <= v <= 100):
+            raise ValueError(f'座標必須在 0-100 範圍內，收到: {v}')
+        return v
 
 
 class Tile(Coordinate):
@@ -34,6 +42,14 @@ class LevelConfig(BaseModel):
     f1: int = 0
     f2: int = 0
     tools: ToolConfig
+
+    @field_validator('f0', 'f1', 'f2')
+    @classmethod
+    def validate_function_slots(cls, v: int) -> int:
+        """驗證函數槽位在 0-20 範圍內"""
+        if not (0 <= v <= 20):
+            raise ValueError(f'函數槽位必須在 0-20 範圍內，收到: {v}')
+        return v
 
 
 class MapData(BaseModel):

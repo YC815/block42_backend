@@ -1,11 +1,10 @@
 """Designer API - 需認證"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from nanoid import generate
 
 from app.database import get_db
 from app.models.user import User
-from app.models.level import Level, LevelStatus
+from app.models.level import Level
 from app.schemas.level import (
     LevelCreate,
     LevelUpdate,
@@ -14,6 +13,7 @@ from app.schemas.level import (
     LevelListItem,
 )
 from app.core.deps import get_current_user
+from app.services import LevelService, get_publish_strategy
 
 router = APIRouter(prefix="/designer", tags=["designer"])
 
@@ -57,20 +57,7 @@ def create_level(
     Returns:
         LevelDetail: 新建立的關卡
     """
-    level = Level(
-        id=generate(size=12),  # NanoID 12碼
-        author_id=current_user.id,
-        title=data.title,
-        status=LevelStatus.DRAFT,
-        is_official=False,
-        official_order=0,
-        map_data=data.map.model_dump(),
-        config=data.config.model_dump(),
-        solution=None
-    )
-    db.add(level)
-    db.commit()
-    db.refresh(level)
+    level = LevelService.create_level(db, current_user.id, data)
     return level
 
 
@@ -104,15 +91,7 @@ def update_level(
     if level.author_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="無權修改此關卡")
 
-    # 強制回到 draft（核心狀態機邏輯）
-    level.title = data.title
-    level.map_data = data.map.model_dump()
-    level.config = data.config.model_dump()
-    level.status = LevelStatus.DRAFT
-    level.solution = None
-
-    db.commit()
-    db.refresh(level)
+    level = LevelService.update_level(db, level, data)
     return level
 
 
@@ -149,30 +128,9 @@ def publish_level(
     if level.author_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="無權發布此關卡")
 
-    # 狀態機邏輯
-    if current_user.is_superuser and data.as_official:
-        # 管理員發布為官方關卡
-        level.status = LevelStatus.PUBLISHED
-        level.is_official = True
-
-        # 處理 official_order
-        if data.official_order is not None:
-            level.official_order = data.official_order
-        else:
-            max_order_result = db.query(Level.official_order).order_by(Level.official_order.desc()).first()
-            level.official_order = (max_order_result[0] + 1) if max_order_result else 1
-    elif current_user.is_superuser:
-        # 管理員發布為社群關卡
-        level.status = LevelStatus.PUBLISHED
-        level.is_official = False
-    else:
-        # 一般使用者 → 進入審核隊列
-        level.status = LevelStatus.PENDING
-
-    level.solution = data.solution.model_dump()
-
-    db.commit()
-    db.refresh(level)
+    # 使用策略模式 - 消除所有 if/elif 分支
+    strategy = get_publish_strategy(current_user, data.as_official, data.official_order)
+    level = strategy.execute(db, level, data.solution.model_dump())
     return level
 
 
@@ -199,6 +157,5 @@ def delete_level(
     if level.author_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="無權刪除此關卡")
 
-    db.delete(level)
-    db.commit()
+    LevelService.delete_level(db, level)
     return None

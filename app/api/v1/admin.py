@@ -7,6 +7,7 @@ from app.models.user import User
 from app.models.level import Level, LevelStatus
 from app.schemas.level import LevelApprove, LevelReject, LevelDetail, LevelListItem
 from app.core.deps import require_superuser
+from app.services import ModerationService
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -69,20 +70,7 @@ def approve_level(
     if not level:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
 
-    level.status = LevelStatus.PUBLISHED
-
-    if data.as_official:
-        level.is_official = True
-        if data.official_order is not None:
-            level.official_order = data.official_order
-        else:
-            max_order_result = db.query(Level.official_order).order_by(Level.official_order.desc()).first()
-            level.official_order = (max_order_result[0] + 1) if max_order_result else 1
-    else:
-        level.is_official = False
-
-    db.commit()
-    db.refresh(level)
+    level = ModerationService.approve_level(db, level, data.as_official, data.official_order)
     return level
 
 
@@ -111,17 +99,10 @@ def reject_level(
 
     Requires:
         管理員權限
-
-    Note:
-        駁回原因 (reason) 目前未儲存，未來可擴充至 JSONB metadata
     """
     level = db.query(Level).filter(Level.id == level_id).first()
     if not level:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
 
-    level.status = LevelStatus.REJECTED
-    # 可以將 reason 存入 JSONB metadata（未來擴充）
-
-    db.commit()
-    db.refresh(level)
+    level = ModerationService.reject_level(db, level, data.reason)
     return level

@@ -6,6 +6,7 @@ from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserRegister, UserLogin, UserOut, Token
 from app.core.security import verify_password, get_password_hash, create_access_token
+from app.core.deps import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -68,3 +69,21 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
 
     access_token = create_access_token(data={"sub": user.id, "is_superuser": user.is_superuser})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.get("/users/me", response_model=UserOut)
+def get_current_user_info(
+    current_user: User = Depends(get_current_user)
+):
+    """獲取當前登入用戶資訊
+
+    Args:
+        current_user: 當前使用者（自動注入）
+
+    Returns:
+        UserOut: 當前用戶資訊（不含密碼）
+
+    Requires:
+        認證 token
+    """
+    return current_user
