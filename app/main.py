@@ -1,5 +1,6 @@
 """FastAPI 應用入口"""
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.database import engine
@@ -33,6 +34,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# CORS 設定
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 註冊路由
 app.include_router(auth.router, prefix="/api/v1")

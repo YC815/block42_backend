@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     debug: bool = False
     log_level: str = "info"
     secret_key: str = "INSECURE_DEFAULT_SECRET_CHANGE_ME"  # JWT 簽名金鑰
+    cors_origins: list[str] = ["http://localhost:3000"]  # CORS 允許的來源
 
 
 settings = Settings()
