@@ -36,10 +36,14 @@ def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
+        user_id_raw = payload.get("sub")
         is_superuser: bool = payload.get("is_superuser", False)
 
-        if user_id is None:
+        if user_id_raw is None:
+            raise credentials_exception
+        try:
+            user_id = int(user_id_raw)
+        except (TypeError, ValueError):
             raise credentials_exception
 
         token_data = TokenData(user_id=user_id, is_superuser=is_superuser)

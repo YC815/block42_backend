@@ -51,6 +51,9 @@ def create_access_token(data: dict[str, Any]) -> str:
         str: JWT token 字串
     """
     to_encode = data.copy()
+    if "sub" in to_encode:
+        # jose 要求 sub 必須是 string
+        to_encode["sub"] = str(to_encode["sub"])
     expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
