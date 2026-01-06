@@ -91,3 +91,8 @@ class Level(Base):
 
     # ===== Relationship =====
     author: Mapped["User"] = relationship("User", back_populates="levels")
+
+    @property
+    def map(self) -> dict:
+        """Expose map_data as `map` for response schemas."""
+        return self.map_data
