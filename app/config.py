@@ -1,4 +1,5 @@
 """配置管理 - 用 pydantic-settings 讀取環境變數"""
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,7 +14,10 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-    database_url: str
+    database_url: str = Field(
+        ...,
+        validation_alias=AliasChoices("DATABASE_URL", "database_url"),
+    )
     debug: bool = False
     log_level: str = "info"
     secret_key: str = "INSECURE_DEFAULT_SECRET_CHANGE_ME"  # JWT 簽名金鑰
