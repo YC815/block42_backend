@@ -216,6 +216,7 @@ class LevelOut(BaseModel):
     id: str
     title: str
     author_id: int
+    author_name: str | None = None
     status: str
     is_official: bool
     official_order: int
@@ -237,6 +238,7 @@ class LevelListItem(BaseModel):
     id: str
     title: str
     author_id: int
+    author_name: str | None = None
     status: str
     is_official: bool
     created_at: datetime
@@ -249,6 +251,7 @@ class AdminLevelListItem(BaseModel):
     id: str
     title: str
     author_id: int
+    author_name: str | None = None
     status: str
     is_official: bool
     official_order: int

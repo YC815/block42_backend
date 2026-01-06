@@ -1,6 +1,6 @@
 """Admin API - 需 superuser 權限"""
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.models.user import User
@@ -38,6 +38,7 @@ def list_pending_levels(
     """
     levels = (
         db.query(Level)
+        .options(joinedload(Level.author))
         .filter(Level.status == LevelStatus.PENDING)
         .order_by(Level.updated_at.desc())
         .all()
@@ -53,6 +54,7 @@ def list_all_levels(
     """列出所有關卡（管理用）"""
     levels = (
         db.query(Level)
+        .options(joinedload(Level.author))
         .order_by(Level.updated_at.desc())
         .all()
     )
@@ -66,7 +68,12 @@ def get_level_admin(
     db: Session = Depends(get_db)
 ):
     """管理員獲取關卡詳情（含 solution）"""
-    level = db.query(Level).filter(Level.id == level_id).first()
+    level = (
+        db.query(Level)
+        .options(joinedload(Level.author))
+        .filter(Level.id == level_id)
+        .first()
+    )
     if not level:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
     return level

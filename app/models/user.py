@@ -7,6 +7,8 @@ from app.database import Base
 
 if TYPE_CHECKING:
     from app.models.level import Level
+    from app.models.progress import LevelProgress
+    from app.models.program import LevelProgram
 
 
 class User(Base):
@@ -27,3 +29,9 @@ class User(Base):
 
     # Relationship (反向關聯)
     levels: Mapped[list["Level"]] = relationship("Level", back_populates="author")
+    progresses: Mapped[list["LevelProgress"]] = relationship(
+        "LevelProgress", back_populates="user"
+    )
+    programs: Mapped[list["LevelProgram"]] = relationship(
+        "LevelProgram", back_populates="user"
+    )

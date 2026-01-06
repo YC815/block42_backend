@@ -10,6 +10,8 @@ from app.database import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
+    from app.models.progress import LevelProgress
+    from app.models.program import LevelProgram
 
 
 class LevelStatus(str, enum.Enum):
@@ -91,8 +93,19 @@ class Level(Base):
 
     # ===== Relationship =====
     author: Mapped["User"] = relationship("User", back_populates="levels")
+    progresses: Mapped[list["LevelProgress"]] = relationship(
+        "LevelProgress", back_populates="level"
+    )
+    programs: Mapped[list["LevelProgram"]] = relationship(
+        "LevelProgram", back_populates="level"
+    )
 
     @property
     def map(self) -> dict:
         """Expose map_data as `map` for response schemas."""
         return self.map_data
+
+    @property
+    def author_name(self) -> str | None:
+        """Expose author username for response schemas."""
+        return self.author.username if self.author else None
