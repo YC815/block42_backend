@@ -5,9 +5,16 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 from app.models.level import Level, LevelStatus
-from app.schemas.level import LevelApprove, LevelReject, LevelDetail, LevelListItem
+from app.schemas.level import (
+    LevelApprove,
+    LevelReject,
+    LevelDetail,
+    LevelListItem,
+    AdminLevelListItem,
+    AdminLevelUpdate,
+)
 from app.core.deps import require_superuser
-from app.services import ModerationService
+from app.services import ModerationService, LevelService
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -36,6 +43,64 @@ def list_pending_levels(
         .all()
     )
     return levels
+
+
+@router.get("/levels", response_model=list[AdminLevelListItem])
+def list_all_levels(
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """列出所有關卡（管理用）"""
+    levels = (
+        db.query(Level)
+        .order_by(Level.updated_at.desc())
+        .all()
+    )
+    return levels
+
+
+@router.get("/levels/{level_id}", response_model=LevelDetail)
+def get_level_admin(
+    level_id: str,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """管理員獲取關卡詳情（含 solution）"""
+    level = db.query(Level).filter(Level.id == level_id).first()
+    if not level:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
+    return level
+
+
+@router.put("/levels/{level_id}", response_model=LevelDetail)
+def update_level_admin(
+    level_id: str,
+    data: AdminLevelUpdate,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """管理員更新關卡（可部分更新）"""
+    level = db.query(Level).filter(Level.id == level_id).first()
+    if not level:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
+
+    level = LevelService.admin_update_level(db, level, data)
+    return level
+
+
+@router.delete("/levels/{level_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_level_admin(
+    level_id: str,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """管理員刪除關卡"""
+    level = db.query(Level).filter(Level.id == level_id).first()
+    if not level:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
+
+    LevelService.delete_level(db, level)
+    return None
 
 
 @router.post("/levels/{level_id}/approve", response_model=LevelDetail)

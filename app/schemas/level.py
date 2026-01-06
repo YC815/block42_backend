@@ -200,6 +200,16 @@ class LevelReject(BaseModel):
     reason: str = Field(..., min_length=1)
 
 
+class AdminLevelUpdate(BaseModel):
+    """管理員更新關卡（允許部分更新）"""
+    title: str | None = Field(default=None, min_length=1, max_length=200)
+    config: LevelConfig | None = None
+    map: MapData | None = None
+    status: Literal["draft", "pending", "published", "rejected"] | None = None
+    is_official: bool | None = None
+    official_order: int | None = None
+
+
 # --- Response Schemas ---
 class LevelOut(BaseModel):
     """公開回傳（含遊戲資料）"""
@@ -230,5 +240,19 @@ class LevelListItem(BaseModel):
     status: str
     is_official: bool
     created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class AdminLevelListItem(BaseModel):
+    """管理員列表項目（含官方排序與更新時間）"""
+    id: str
+    title: str
+    author_id: int
+    status: str
+    is_official: bool
+    official_order: int
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
