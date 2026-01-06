@@ -1,5 +1,5 @@
 """Level Pydantic Schemas - 重構版"""
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Literal
 from datetime import datetime
 
@@ -54,9 +54,27 @@ class LevelConfig(BaseModel):
 
 class MapData(BaseModel):
     """地圖資料"""
+    gridSize: int = Field(10, ge=4, le=16, description="棋盤尺寸 (NxN)")
     start: StartPoint
     stars: list[Coordinate]
     tiles: list[Tile]
+
+    @model_validator(mode="after")
+    def validate_bounds(self) -> "MapData":
+        """驗證所有座標落在棋盤範圍內"""
+        max_index = self.gridSize - 1
+
+        def ensure_within_bounds(label: str, x: int, y: int) -> None:
+            if x > max_index or y > max_index:
+                raise ValueError(f"{label}超出棋盤範圍 (0-{max_index})")
+
+        ensure_within_bounds("起點", self.start.x, self.start.y)
+        for star in self.stars:
+            ensure_within_bounds("星星", star.x, star.y)
+        for tile in self.tiles:
+            ensure_within_bounds("地板", tile.x, tile.y)
+
+        return self
 
 
 # --- Solution Schema ---

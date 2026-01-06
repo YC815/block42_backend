@@ -59,7 +59,7 @@ class Level(Base):
     official_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     # ===== 遊戲資料 (JSONB) =====
-    # map_data 結構: {start: {x, y, dir}, stars: [{x, y}], tiles: [{x, y, color}]}
+    # map_data 結構: {gridSize, start: {x, y, dir}, stars: [{x, y}], tiles: [{x, y, color}]}
     map_data: Mapped[dict] = mapped_column(JSONB, nullable=False)
 
     # config 結構: {f0: int, f1: int, f2: int, tools: {paint_red, paint_green, paint_blue}}
