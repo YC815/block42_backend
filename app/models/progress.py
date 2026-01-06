@@ -22,10 +22,10 @@ class LevelProgress(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False, index=True
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     level_id: Mapped[str] = mapped_column(
-        ForeignKey("levels.id"), nullable=False, index=True
+        ForeignKey("levels.id", ondelete="CASCADE"), nullable=False, index=True
     )
     is_completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     best_steps: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -40,5 +40,5 @@ class LevelProgress(Base):
         nullable=False,
     )
 
-    user: Mapped["User"] = relationship("User", back_populates="progresses")
+    user: Mapped["User"] = relationship("User", back_populates="progresses", passive_deletes=True)
     level: Mapped["Level"] = relationship("Level", back_populates="progresses")

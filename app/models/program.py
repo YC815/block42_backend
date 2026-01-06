@@ -23,10 +23,10 @@ class LevelProgram(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False, index=True
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     level_id: Mapped[str] = mapped_column(
-        ForeignKey("levels.id"), nullable=False, index=True
+        ForeignKey("levels.id", ondelete="CASCADE"), nullable=False, index=True
     )
     commands: Mapped[dict] = mapped_column(JSONB, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
@@ -39,7 +39,7 @@ class LevelProgram(Base):
         nullable=False,
     )
 
-    user: Mapped["User"] = relationship("User", back_populates="programs")
+    user: Mapped["User"] = relationship("User", back_populates="programs", passive_deletes=True)
     level: Mapped["Level"] = relationship("Level", back_populates="programs")
 
     @property

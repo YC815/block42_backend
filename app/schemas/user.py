@@ -25,6 +25,20 @@ class UserOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AdminUserCreate(BaseModel):
+    """管理員建立使用者"""
+    username: str = Field(..., min_length=3, max_length=50, description="使用者名稱（3-50字）")
+    password: str = Field(..., min_length=6, description="密碼")
+    is_superuser: bool = False
+
+
+class AdminUserUpdate(BaseModel):
+    """管理員更新使用者"""
+    username: str | None = Field(default=None, min_length=3, max_length=50)
+    password: str | None = Field(default=None, min_length=6)
+    is_superuser: bool | None = None
+
+
 class Token(BaseModel):
     """JWT Token Response"""
     access_token: str

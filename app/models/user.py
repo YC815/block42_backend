@@ -30,8 +30,14 @@ class User(Base):
     # Relationship (反向關聯)
     levels: Mapped[list["Level"]] = relationship("Level", back_populates="author")
     progresses: Mapped[list["LevelProgress"]] = relationship(
-        "LevelProgress", back_populates="user"
+        "LevelProgress",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
     programs: Mapped[list["LevelProgram"]] = relationship(
-        "LevelProgram", back_populates="user"
+        "LevelProgram",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )

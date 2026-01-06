@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session, joinedload
 from app.database import get_db
 from app.models.user import User
 from app.models.level import Level, LevelStatus
+from app.models.progress import LevelProgress
+from app.models.program import LevelProgram
 from app.schemas.level import (
     LevelApprove,
     LevelReject,
@@ -13,6 +15,9 @@ from app.schemas.level import (
     AdminLevelListItem,
     AdminLevelUpdate,
 )
+from app.schemas.user import AdminUserCreate, AdminUserUpdate, UserOut
+from app.schemas.admin import LevelTransferRequest, LevelTransferResult
+from app.core.security import get_password_hash
 from app.core.deps import require_superuser
 from app.services import ModerationService, LevelService
 
@@ -44,6 +49,148 @@ def list_pending_levels(
         .all()
     )
     return levels
+
+
+@router.get("/users", response_model=list[UserOut])
+def list_users(
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """列出所有使用者（管理用）"""
+    users = db.query(User).order_by(User.id).all()
+    return users
+
+
+@router.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+def create_user(
+    data: AdminUserCreate,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """建立使用者（管理用）"""
+    existing = db.query(User).filter(User.username == data.username).first()
+    if existing:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="使用者名稱已存在")
+
+    user = User(
+        username=data.username,
+        hashed_password=get_password_hash(data.password),
+        is_superuser=data.is_superuser,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.put("/users/{user_id}", response_model=UserOut)
+def update_user(
+    user_id: int,
+    data: AdminUserUpdate,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """更新使用者（管理用）"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="使用者不存在")
+
+    if data.username and data.username != user.username:
+        existing = db.query(User).filter(User.username == data.username).first()
+        if existing:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="使用者名稱已存在")
+        user.username = data.username
+
+    if data.password:
+        user.hashed_password = get_password_hash(data.password)
+
+    if data.is_superuser is not None:
+        user.is_superuser = data.is_superuser
+
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(
+    user_id: int,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db)
+):
+    """刪除使用者（管理用）"""
+    if user_id == current_user.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="不能刪除自己")
+
+    authored_count = (
+        db.query(Level)
+        .filter(Level.author_id == user_id)
+        .count()
+    )
+    if authored_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="此帳號仍有關卡，請先刪除或轉移關卡",
+        )
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="使用者不存在")
+
+    db.query(LevelProgress).filter(LevelProgress.user_id == user_id).delete(
+        synchronize_session=False
+    )
+    db.query(LevelProgram).filter(LevelProgram.user_id == user_id).delete(
+        synchronize_session=False
+    )
+
+    db.delete(user)
+    db.commit()
+    return None
+
+
+@router.post("/users/{user_id}/transfer-levels", response_model=LevelTransferResult)
+def transfer_user_levels(
+    user_id: int,
+    payload: LevelTransferRequest,
+    current_user: User = Depends(require_superuser),
+    db: Session = Depends(get_db),
+):
+    """批次轉移使用者關卡"""
+    if not payload.transfers:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未提供轉移資料")
+
+    transfer_map = {item.level_id: item.new_author_id for item in payload.transfers}
+    if any(target_id == user_id for target_id in transfer_map.values()):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="不能轉移到原帳號",
+        )
+
+    target_ids = set(transfer_map.values())
+    targets = db.query(User).filter(User.id.in_(target_ids)).all()
+    if len(targets) != len(target_ids):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="目標帳號不存在",
+        )
+
+    levels = (
+        db.query(Level)
+        .filter(Level.id.in_(transfer_map.keys()), Level.author_id == user_id)
+        .all()
+    )
+    if len(levels) != len(transfer_map):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="關卡不存在或不屬於該帳號",
+        )
+
+    for level in levels:
+        level.author_id = transfer_map[level.id]
+
+    db.commit()
+    return LevelTransferResult(transferred=len(levels))
 
 
 @router.get("/levels", response_model=list[AdminLevelListItem])
