@@ -3,6 +3,10 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Literal
 from datetime import datetime
 
+# --- 地圖限制常數 ---
+COORD_MIN = -512
+COORD_MAX = 512
+MAX_DIMENSION = 128
 
 # --- 遊戲資料結構 (保持原樣) ---
 class Coordinate(BaseModel):
@@ -13,9 +17,9 @@ class Coordinate(BaseModel):
     @field_validator('x', 'y')
     @classmethod
     def validate_coordinates(cls, v: int) -> int:
-        """驗證座標在 0-100 範圍內"""
-        if not (0 <= v <= 100):
-            raise ValueError(f'座標必須在 0-100 範圍內，收到: {v}')
+        """驗證座標落在允許範圍內（允許編輯時使用負座標）"""
+        if not (COORD_MIN <= v <= COORD_MAX):
+            raise ValueError(f'座標必須在 {COORD_MIN}-{COORD_MAX} 範圍內，收到: {v}')
         return v
 
 
@@ -52,28 +56,105 @@ class LevelConfig(BaseModel):
         return v
 
 
+class MapBounds(BaseModel):
+    """地圖邊界（包含 padding 後的渲染範圍）"""
+    minX: int
+    minY: int
+    maxX: int
+    maxY: int
+
+    @property
+    def width(self) -> int:
+        return self.maxX - self.minX + 1
+
+    @property
+    def height(self) -> int:
+        return self.maxY - self.minY + 1
+
+
 class MapData(BaseModel):
     """地圖資料"""
-    gridSize: int = Field(10, ge=4, le=16, description="棋盤尺寸 (NxN)")
+    # gridSize 將於驗證後自動回填，保留與前端相容
+    gridSize: int | None = Field(
+        default=None,
+        description="棋盤尺寸 (自動計算：內容最大邊 + padding*2)",
+        ge=1,
+        le=MAX_DIMENSION
+    )
+    padding: int = Field(1, ge=0, le=8, description="渲染預留空氣的格數")
+    bounds: MapBounds | None = None
     start: StartPoint
     stars: list[Coordinate]
     tiles: list[Tile]
 
+    @model_validator(mode="before")
+    @classmethod
+    def default_padding(cls, data: dict) -> dict:
+        """舊資料若缺少 padding，預設為 0 以避免平移既有座標"""
+        if isinstance(data, dict) and "padding" not in data:
+            data = {**data, "padding": 0}
+        return data
+
     @model_validator(mode="after")
     def validate_bounds(self) -> "MapData":
-        """驗證所有座標落在棋盤範圍內"""
-        max_index = self.gridSize - 1
+        """自動平移原點並計算邊界，保留 padding 以便動態渲染"""
+        all_points = [(self.start.x, self.start.y)] + [
+            (coord.x, coord.y) for coord in (self.stars + self.tiles)
+        ]
+        if not all_points:
+            raise ValueError("地圖必須至少包含起點或一個地板")
 
-        def ensure_within_bounds(label: str, x: int, y: int) -> None:
-            if x > max_index or y > max_index:
-                raise ValueError(f"{label}超出棋盤範圍 (0-{max_index})")
+        min_x = min(x for x, _ in all_points)
+        min_y = min(y for _, y in all_points)
+        max_x = max(x for x, _ in all_points)
+        max_y = max(y for _, y in all_points)
 
-        ensure_within_bounds("起點", self.start.x, self.start.y)
-        for star in self.stars:
-            ensure_within_bounds("星星", star.x, star.y)
-        for tile in self.tiles:
-            ensure_within_bounds("地板", tile.x, tile.y)
+        width_with_padding = (max_x - min_x + 1) + self.padding * 2
+        height_with_padding = (max_y - min_y + 1) + self.padding * 2
 
+        if width_with_padding > MAX_DIMENSION or height_with_padding > MAX_DIMENSION:
+            raise ValueError(
+                f"地圖尺寸過大，最多 {MAX_DIMENSION}x{MAX_DIMENSION} (含預留空氣)"
+            )
+
+        # 平移座標，確保最左/上邊界落在 padding 之後
+        shift_x = self.padding - min_x
+        shift_y = self.padding - min_y
+
+        normalized_tiles = [
+            Tile(x=tile.x + shift_x, y=tile.y + shift_y, color=tile.color)
+            for tile in self.tiles
+        ]
+        normalized_stars = [
+            Coordinate(x=star.x + shift_x, y=star.y + shift_y)
+            for star in self.stars
+        ]
+        normalized_start = StartPoint(
+            x=self.start.x + shift_x,
+            y=self.start.y + shift_y,
+            dir=self.start.dir
+        )
+
+        # 確保起點有地板
+        has_start_tile = any(
+            tile.x == normalized_start.x and tile.y == normalized_start.y
+            for tile in normalized_tiles
+        )
+        if not has_start_tile:
+            normalized_tiles.append(
+                Tile(x=normalized_start.x, y=normalized_start.y, color="R")
+            )
+
+        self.tiles = normalized_tiles
+        self.stars = normalized_stars
+        self.start = normalized_start
+        self.bounds = MapBounds(
+            minX=0,
+            minY=0,
+            maxX=width_with_padding - 1,
+            maxY=height_with_padding - 1,
+        )
+        self.gridSize = max(width_with_padding, height_with_padding)
         return self
 
 
