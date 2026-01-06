@@ -1,5 +1,5 @@
 """FastAPI 應用入口"""
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
