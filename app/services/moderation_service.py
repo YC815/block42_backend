@@ -2,6 +2,7 @@
 from typing import Optional
 from datetime import datetime, UTC
 from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 
 from app.models.level import Level, LevelStatus
 
@@ -31,7 +32,11 @@ class ModerationService:
             ValueError: 如果關卡狀態不是 PENDING
         """
         if level.status != LevelStatus.PENDING:
-            raise ValueError(f"只能審核 PENDING 狀態的關卡，當前: {level.status}")
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"只能審核 PENDING 狀態的關卡，當前: {level.status}",
+            )
 
         level.status = LevelStatus.PUBLISHED
         level.is_official = as_official
@@ -65,7 +70,11 @@ class ModerationService:
             ValueError: 如果關卡狀態不是 PENDING
         """
         if level.status != LevelStatus.PENDING:
-            raise ValueError(f"只能駁回 PENDING 狀態的關卡，當前: {level.status}")
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"只能駁回 PENDING 狀態的關卡，當前: {level.status}",
+            )
 
         level.status = LevelStatus.REJECTED
         level.metadata_ = {

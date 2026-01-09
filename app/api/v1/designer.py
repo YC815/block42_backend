@@ -1,10 +1,10 @@
 """Designer API - 需認證"""
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.models.user import User
-from app.models.level import Level
+from app.models.level import Level, LevelStatus
 from app.schemas.level import (
     LevelCreate,
     LevelUpdate,
@@ -34,6 +34,7 @@ def list_my_levels(
     """
     levels = (
         db.query(Level)
+        .options(joinedload(Level.author))
         .filter(Level.author_id == current_user.id)
         .order_by(Level.updated_at.desc())
         .all()
@@ -127,6 +128,11 @@ def publish_level(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="關卡不存在")
     if level.author_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="無權發布此關卡")
+    if level.status != LevelStatus.DRAFT:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"當前狀態為 {level.status}，只能從 draft 發布。請先更新回草稿後再送審。",
+        )
 
     # 使用策略模式 - 消除所有 if/elif 分支
     strategy = get_publish_strategy(current_user, data.as_official, data.official_order)

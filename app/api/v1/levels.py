@@ -9,7 +9,7 @@ from app.models.program import LevelProgram
 from app.schemas.progress import LevelProgressOut, LevelProgressUpdate
 from app.schemas.program import LevelProgramOut, LevelProgramUpdate
 from app.schemas.level import LevelOut, LevelListItem
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, get_current_user_optional
 from app.models.user import User
 
 router = APIRouter(prefix="/levels", tags=["public"])
@@ -197,18 +197,23 @@ def upsert_level_program(
 
 
 @router.get("/{level_id}", response_model=LevelOut)
-def get_level(level_id: str, db: Session = Depends(get_db)):
+def get_level(
+    level_id: str,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional),
+):
     """獲取單個關卡詳情（不含 solution）
 
     Args:
         level_id: 關卡 ID（NanoID）
         db: 資料庫 session
+        current_user: 可選的當前使用者（公開端點）
 
     Returns:
-        LevelOut: 關卡詳情
+        LevelOut: 關卡詳情（僅公開已發布關卡；草稿需作者或管理員）
 
     Raises:
-        HTTPException 404: 關卡不存在
+        HTTPException 404/403: 關卡不存在或無權存取
     """
     level = (
         db.query(Level)
@@ -221,4 +226,17 @@ def get_level(level_id: str, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="關卡不存在"
         )
+
+    if level.status != LevelStatus.PUBLISHED:
+        if not current_user:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="需要登入才能查看未發布的關卡"
+            )
+        if current_user.id != level.author_id and not current_user.is_superuser:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="無權查看此關卡"
+            )
+
     return level

@@ -20,7 +20,12 @@ class Settings(BaseSettings):
     )
     debug: bool = False
     log_level: str = "info"
-    secret_key: str = "INSECURE_DEFAULT_SECRET_CHANGE_ME"  # JWT 簽名金鑰
+    secret_key: str = Field(
+        ...,
+        min_length=32,
+        validation_alias=AliasChoices("SECRET_KEY", "secret_key"),
+        description="JWT 簽名金鑰，必須透過環境變數提供",
+    )
     cors_origins: list[str] = ["http://localhost:3000"]  # CORS 允許的來源
 
 
