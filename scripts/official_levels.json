@@ -1,0 +1,1313 @@
+[
+  {
+    "title": "1. 起飛",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 0
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 5,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "move",
+        "move",
+        "move"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 4
+    }
+  },
+  {
+    "title": "2. 轉個彎",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 3,
+          "y": 0
+        },
+        {
+          "x": 3,
+          "y": 3
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 8,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "move",
+        "move",
+        "turn_right",
+        "move",
+        "move",
+        "move"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 7
+    }
+  },
+  {
+    "title": "3. 自己呼叫自己",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 5,
+          "y": 0
+        },
+        {
+          "x": 10,
+          "y": 0
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 7,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 9,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 10,
+          "y": 0,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 2,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "f0"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 19
+    }
+  },
+  {
+    "title": "4. 下樓梯",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 5,
+          "y": 5
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 5,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "turn_right",
+        "move",
+        "turn_left",
+        "f0"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 23
+    }
+  },
+  {
+    "title": "5. 看到紅色就右轉",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 6,
+          "y": 0
+        },
+        {
+          "x": 6,
+          "y": 5
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "color": "R"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 3,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "turn_right:R",
+        "f0"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 31
+    }
+  },
+  {
+    "title": "6. 螺旋",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 8,
+          "y": 8
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 4
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 7,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 0,
+          "color": "R"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 7,
+          "color": "B"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "color": "R"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 8,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "color": "R"
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "color": "R"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "color": "R"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "color": "R"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "color": "R"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "color": "R"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 3,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "turn_right:R",
+        "f0"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 142
+    }
+  },
+  {
+    "title": "7. 綠右紅左",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 10,
+          "y": 6
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "G"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "color": "R"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "color": "G"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "color": "R"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "color": "G"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "color": "R"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 4,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "turn_right:G",
+        "turn_left:R",
+        "f0"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 61
+    }
+  },
+  {
+    "title": "8. 正方形巡邏",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 4,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 3,
+      "f1": 4,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "f1",
+        "turn_right",
+        "f0"
+      ],
+      "commands_f1": [
+        "move",
+        "move",
+        "move",
+        "move"
+      ],
+      "commands_f2": [],
+      "steps_count": 25
+    }
+  },
+  {
+    "title": "9. 蛇行",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 0,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 5,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 5,
+          "y": 3
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "color": "R"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "color": "G"
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "color": "R"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 4,
+      "f1": 3,
+      "f2": 3,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": false
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "f1:R",
+        "f2:G",
+        "f0"
+      ],
+      "commands_f1": [
+        "turn_right",
+        "move",
+        "turn_right"
+      ],
+      "commands_f2": [
+        "turn_left",
+        "move",
+        "turn_left"
+      ],
+      "steps_count": 66
+    }
+  },
+  {
+    "title": "10. 走過就塗掉",
+    "map": {
+      "padding": 1,
+      "start": {
+        "x": 0,
+        "y": 3,
+        "dir": 1
+      },
+      "stars": [
+        {
+          "x": 3,
+          "y": 5
+        },
+        {
+          "x": 0,
+          "y": 5
+        },
+        {
+          "x": 6,
+          "y": 3
+        }
+      ],
+      "tiles": [
+        {
+          "x": 0,
+          "y": 3,
+          "color": "R"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "color": "R"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "color": "R"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 1,
+          "y": 6,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 6,
+          "color": "R"
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "color": "B"
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "color": "B"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "color": "B"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "color": "B"
+        }
+      ]
+    },
+    "config": {
+      "f0": 4,
+      "f1": 0,
+      "f2": 0,
+      "tools": {
+        "paint_red": false,
+        "paint_green": false,
+        "paint_blue": true
+      }
+    },
+    "solution": {
+      "commands_f0": [
+        "move",
+        "turn_right:R",
+        "paint_blue:R",
+        "f0"
+      ],
+      "commands_f1": [],
+      "commands_f2": [],
+      "steps_count": 69
+    }
+  }
+]
